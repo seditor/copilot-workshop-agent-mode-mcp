@@ -5,6 +5,7 @@ const todoInput = document.querySelector("#todo-input");
 const todoList = document.querySelector("#todo-list");
 const emptyMessage = document.querySelector("#empty-message");
 const remainingCount = document.querySelector("#remaining-count");
+const clearCompletedButton = document.querySelector("#clear-completed-button");
 const themeToggle = document.querySelector("#theme-toggle");
 const filterButtons = document.querySelectorAll(".filter-button");
 const THEME_STORAGE_KEY = "todo-list-theme";
@@ -96,8 +97,22 @@ function renderTodos() {
   emptyMessage.textContent = emptyMessages[currentFilter];
   emptyMessage.hidden = getFilteredTodos().length > 0;
   const unfinishedCount = todos.filter((todo) => !todo.completed).length;
+  const hasCompletedTodos = todos.some((todo) => todo.completed);
+  clearCompletedButton.disabled = !hasCompletedTodos;
   remainingCount.textContent = `未完成：${unfinishedCount} 項`;
 }
+
+clearCompletedButton.addEventListener("click", () => {
+  const shouldClear = window.confirm("確定要清除所有已完成的待辦事項嗎？此操作無法復原。");
+
+  if (!shouldClear) {
+    return;
+  }
+
+  todos = todos.filter((todo) => !todo.completed);
+  saveTodos();
+  renderTodos();
+});
 
 themeToggle.addEventListener("click", () => {
   const nextTheme = getEffectiveTheme() === "dark" ? "light" : "dark";
